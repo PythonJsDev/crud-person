@@ -82,7 +82,7 @@ class _PersonListState extends State<PersonList> {
                         message: "Are you sure you want to delete this person?",
                       ),
                     );
-                    print(result);
+                  
                     return result;
                   },
                   background: Container(

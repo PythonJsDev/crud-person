@@ -22,6 +22,41 @@ class PersonsService {
     ).catchError((_) => APIResponse<List<Person>>(
         data: <Person>[], error: true, errorMessage: 'An error occured'));
   }
+
+  Future<APIResponse<Person>> getPerson(String id) {
+    return http
+        .get(Uri.parse('http://10.0.2.2:8000/persons/$id'))
+        .then((data) {
+      if (data.statusCode == 200) {
+        final jsonData = json.decode(data.body);
+        return APIResponse<Person>(data: Person.fromJson(jsonData));
+      }
+      return APIResponse<Person>(
+          data: null, error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<Person>(
+            data: null, error: true, errorMessage: 'An error occured'));
+  }
+
+
+  // Future<APIResponse<bool>> createNote(NoteManipulation item) {
+  //   return http
+  //       .post(
+  //     Uri.parse('http://10.0.2.2:8000/persons/'),
+  //     headers: <String, String>{
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //     },
+  //     body: json.encode(item.toJson()),
+  //   )
+  //       .then((data) {
+  //     if (data.statusCode == 201) {
+  //       return APIResponse<bool>(data: true);
+  //     }
+  //     return APIResponse<bool>(
+  //         data: null, error: true, errorMessage: 'An error occured');
+  //   }).catchError((_) => APIResponse<bool>(
+  //           data: null, error: true, errorMessage: 'An error occured'));
+  // }
+
 }
   // List<Person> getPersonesList() {
 

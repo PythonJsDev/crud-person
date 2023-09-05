@@ -20,7 +20,6 @@ class Person {
       required this.city,
       required this.approvalRef});
 
-
   factory Person.fromJson(Map<String, dynamic> item) {
     return Person(
       id: item['id'],
@@ -34,5 +33,10 @@ class Person {
       approvalRef: item['approval_ref'],
     );
   }
-
 }
+
+final Map<String, String> rolesItems = {
+  "Titulaire": "I",
+  "Piégeur": 'T',
+  "Contrôleur": 'C',
+};
