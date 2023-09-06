@@ -15,7 +15,6 @@ class PersonModify extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(personId == null ? 'Create person' : 'Edit person'),
-        // title: const Text('Create person'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),

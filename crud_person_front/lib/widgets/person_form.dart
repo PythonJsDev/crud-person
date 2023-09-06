@@ -1,3 +1,4 @@
+import 'package:crud_person_front/models/person_manipulation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:crud_person_front/services/persons_service.dart';
@@ -7,7 +8,6 @@ class PersonForm extends StatefulWidget {
   const PersonForm({super.key, required this.personId});
 
   final int? personId;
-  
 
   @override
   State<PersonForm> createState() => _PersonFormState();
@@ -16,11 +16,11 @@ class PersonForm extends StatefulWidget {
 class _PersonFormState extends State<PersonForm> {
   final _formKey = GlobalKey<FormState>();
 
-  
-
   PersonsService get personsService => GetIt.I<PersonsService>();
   String? errorMessage;
   Person? person;
+  Map<String, dynamic> personItem = {};
+  String _selectedRole = 'T';
 
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -29,15 +29,33 @@ class _PersonFormState extends State<PersonForm> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _approvalRefController = TextEditingController();
-  
-  String? _selectedRole;
-  
 
-  // final Map<String, String> rolesItems = {
-  //   "Titulaire": "I",
-  //   "Piégeur": 'T',
-  //   "Contrôleur": 'C',
-  // };
+  void _updatePerson() async {
+    // setState(() {
+    //   _isLoading = true;
+    // });
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      final personUpdated = PersonManipulation(
+        lastName: personItem['lastName'],
+        firstName: personItem['firstName'],
+        email: personItem['email'],
+        role: personItem['role'],
+        address: personItem['address'],
+        zipCode: personItem['zipCode'],
+        city: personItem['city'],
+        approvalRef: personItem['approvalRef'],
+      );
+
+      final result = await personsService.updatePerson(
+          widget.personId.toString(), personUpdated);
+
+      // setState(() {
+      //   _isLoading = false;
+      // });
+    }
+  }
 
   String? _validStringField(value, nbMaxChar) {
     if (value == null ||
@@ -56,6 +74,7 @@ class _PersonFormState extends State<PersonForm> {
         if (response.error) {
           errorMessage = response.errorMessage;
         }
+
         person = response.data;
         _lastNameController.text = person!.lastName;
         _firstNameController.text = person!.firstName;
@@ -67,7 +86,6 @@ class _PersonFormState extends State<PersonForm> {
         setState(() {
           _selectedRole = person!.role;
         });
-
       },
     );
 
@@ -91,13 +109,12 @@ class _PersonFormState extends State<PersonForm> {
                     decoration: const InputDecoration(
                       label: Text('Last Name'),
                     ),
-
                     validator: (value) {
                       return _validStringField(value, 30);
                     },
-                    // onSaved: (value) {
-                    //   person['lastName'] = value!;
-                    // },
+                    onSaved: (value) {
+                      personItem['lastName'] = value!;
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -111,9 +128,9 @@ class _PersonFormState extends State<PersonForm> {
                     validator: (value) {
                       return _validStringField(value, 30);
                     },
-                    // onSaved: (value) {
-                    //   person['firstName'] = value!;
-                    // },
+                    onSaved: (value) {
+                      personItem['firstName'] = value!;
+                    },
                   ),
                 ),
               ],
@@ -127,9 +144,9 @@ class _PersonFormState extends State<PersonForm> {
               validator: (value) {
                 return _validStringField(value, 300);
               },
-              // onSaved: (value) {
-              //   person['address'] = value!;
-              // },
+              onSaved: (value) {
+                personItem['address'] = value!;
+              },
             ),
             Row(
               children: [
@@ -150,9 +167,9 @@ class _PersonFormState extends State<PersonForm> {
                       }
                       return null;
                     },
-                    // onSaved: (value) {
-                    //   person['zipCode'] = int.parse(value!);
-                    // },
+                    onSaved: (value) {
+                      personItem['zipCode'] = int.parse(value!);
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -166,9 +183,9 @@ class _PersonFormState extends State<PersonForm> {
                     validator: (value) {
                       return _validStringField(value, 50);
                     },
-                    // onSaved: (value) {
-                    //   person['city'] = value!;
-                    // },
+                    onSaved: (value) {
+                      personItem['city'] = value!;
+                    },
                   ),
                 ),
               ],
@@ -188,9 +205,9 @@ class _PersonFormState extends State<PersonForm> {
                 }
                 return null;
               },
-              // onSaved: (value) {
-              //   person['email'] = value!;
-              // },
+              onSaved: (value) {
+                personItem['email'] = value!;
+              },
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,22 +218,20 @@ class _PersonFormState extends State<PersonForm> {
                       isDense: true,
                       labelText: 'Role',
                     ),
-
                     value: _selectedRole,
                     items: [
                       for (final role in rolesItems.entries)
                         DropdownMenuItem(
                             value: role.value, child: Text(role.key)),
                     ],
-                    // items: dropdownRolesItems,
                     onChanged: (value) {
                       setState(() {
                         _selectedRole = value!;
                       });
                     },
-                    // onSaved: (value) {
-                    //   person['role'] = value!;
-                    // },
+                    onSaved: (value) {
+                      personItem['role'] = value!;
+                    },
                   ),
                 ),
                 if (_selectedRole == 'T') ...[
@@ -232,9 +247,9 @@ class _PersonFormState extends State<PersonForm> {
                       validator: (value) {
                         return _validStringField(value, 50);
                       },
-                      // onSaved: (value) {
-                      //   person['approval_ref'] = value!;
-                      // },
+                      onSaved: (value) {
+                        personItem['approvalRef'] = value!;
+                      },
                     ),
                   ),
                 ]
@@ -252,7 +267,7 @@ class _PersonFormState extends State<PersonForm> {
                     child: const Text('Reset'),
                   ),
                   ElevatedButton(
-                    onPressed: () {}, // _savePerson,
+                    onPressed: () {},
                     child: const Text('Add Person'),
                   ),
                 ],
@@ -268,7 +283,7 @@ class _PersonFormState extends State<PersonForm> {
                     child: const Text('Cancel'),
                   ),
                   ElevatedButton(
-                    onPressed: () {}, // _savePerson,
+                    onPressed: _updatePerson,
                     child: const Text('Update'),
                   ),
                 ],
