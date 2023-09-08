@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import 'package:crud_person_front/screens/person_modify.dart';
 
-import 'package:crud_person_front/widgets/alert_dialog_box.dart';
+import 'package:crud_person_front/widgets/alert_dialog_box_yes_no.dart';
 import 'package:crud_person_front/widgets/circular_progress.dart';
 import 'package:crud_person_front/widgets/letter_in_circle.dart';
 
@@ -11,6 +11,7 @@ import 'package:crud_person_front/models/person.dart';
 import 'package:crud_person_front/models/api_response.dart';
 
 import 'package:crud_person_front/services/persons_service.dart';
+import 'package:crud_person_front/utils/functions.dart';
 
 class PersonList extends StatefulWidget {
   const PersonList({super.key});
@@ -76,11 +77,37 @@ class _PersonListState extends State<PersonList> {
                 confirmDismiss: (direction) async {
                   final result = await showDialog(
                     context: context,
-                    builder: (_) => const AlertDialogBox(
+                    builder: (_) => const AlertDialogBoxYesNo(
                       title: 'Warning !',
                       message: "Are you sure you want to delete this person?",
                     ),
                   );
+                  if (result) {
+                    final deleteResult = await service
+                        .deletePerson(_apiResponse.data![index].id.toString());
+                    if (mounted) {
+                      String message;
+                      if (deleteResult.data == true) {
+                        message = "The person was deleted succesfully";
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(message),
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                      } else {
+                        await HelperFunctions.errorMessage(
+                            deleteResult, context);
+                      }
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   SnackBar(
+                      //     content: Text(message),
+                      //     duration: const Duration(seconds: 3),
+                      //   ),
+                      // );
+                      return deleteResult.data;
+                    }
+                  }
 
                   return result;
                 },

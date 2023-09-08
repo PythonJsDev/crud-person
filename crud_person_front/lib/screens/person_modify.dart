@@ -8,7 +8,6 @@ import 'package:crud_person_front/widgets/person_form.dart';
 class PersonModify extends StatelessWidget {
   const PersonModify({super.key, required this.personId});
   final int? personId;
-
   // bool get isEditing => widget.noteId != null;
   @override
   Widget build(BuildContext context) {

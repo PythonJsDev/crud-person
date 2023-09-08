@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AlertDialogBox extends StatelessWidget {
-  const AlertDialogBox({super.key, required this.title, required this.message});
+class AlertDialogBoxYesNo extends StatelessWidget {
+  const AlertDialogBoxYesNo({super.key, required this.title, required this.message});
   final String title;
   final String message;
 
